@@ -101,6 +101,9 @@ func (t *Tail) Parse(args []string) bool {
 func (t *Tail) ParseBytes(s string) bool {
 	var sum uint = 0
 	for _, v := range s {
+		if !IsDigit(v) {
+			return false
+		}
 		if sum > UintMax/10 {
 			return false
 		}
