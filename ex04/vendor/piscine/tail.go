@@ -1,7 +1,5 @@
 package piscine
 
-import "fmt"
-
 const (
 	StateStart = iota
 	StateHyphen
@@ -35,7 +33,6 @@ func (t *Tail) Parse(args []string) bool {
 				break
 			}
 			var r rune = rune(s[i])
-			fmt.Println(string(r))
 			switch state {
 			case StateStart:
 				if r != '-' {
@@ -74,7 +71,7 @@ func (t *Tail) Parse(args []string) bool {
 				i++
 			case StateBytes:
 				if !IsDigit(r) {
-					if i+i < sLen || t.ParseBytes(bytes) {
+					if i+i < sLen || !t.ParseBytes(bytes) {
 						PrintErrorMsg("invalid number of bytes: ‘" + bytes + "‘")
 						return false
 					}
@@ -85,10 +82,12 @@ func (t *Tail) Parse(args []string) bool {
 			}
 		}
 		if bytes != "" {
-			if t.ParseBytes(bytes) {
+			state = StateFiles
+			if !t.ParseBytes(bytes) {
 				PrintErrorMsg("invalid number of bytes: ‘" + bytes + "‘")
 				return false
 			}
+			bytes = ""
 		}
 	}
 	if state != StateFiles {
