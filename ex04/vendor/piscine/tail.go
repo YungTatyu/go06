@@ -6,6 +6,7 @@ const (
 	StateCOption
 	StateSpaceBeforeBytes
 	StateBytes
+	StateBytesDone
 	StateFiles
 )
 
@@ -21,9 +22,14 @@ type Tail struct {
 func (t *Tail) Parse(args []string) bool {
 	state := StateStart
 	for _, s := range args {
-		if state == StateFiles {
+		if state == StateBytesDone || state == StateFiles {
+			state = StateFiles
 			t.files = append(t.files, s)
 			continue
+		}
+		if state == StateHyphen {
+			PrintErrorMsg("invalid option: -")
+			return false
 		}
 		var i uint = 0
 		var bytes string
@@ -43,7 +49,7 @@ func (t *Tail) Parse(args []string) bool {
 				i++
 			case StateHyphen:
 				if r != 'c' {
-					PrintErrorMsg("unexpected value: " + string(r))
+					PrintErrorMsg("invalid option: " + string(r))
 					return false
 				}
 				state = StateCOption
@@ -71,23 +77,19 @@ func (t *Tail) Parse(args []string) bool {
 				i++
 			case StateBytes:
 				if !IsDigit(r) {
-					if i+i < sLen || !t.ParseBytes(bytes) {
-						PrintErrorMsg("invalid number of bytes: ‘" + bytes + "‘")
-						return false
-					}
-					state = StateFiles
+					PrintErrorMsg("invalid number of bytes: ‘" + bytes + "‘")
+					return false
 				}
 				bytes += string(r)
 				i++
 			}
 		}
-		if bytes != "" {
-			state = StateFiles
+		if state == StateBytes {
+			state = StateBytesDone
 			if !t.ParseBytes(bytes) {
 				PrintErrorMsg("invalid number of bytes: ‘" + bytes + "‘")
 				return false
 			}
-			bytes = ""
 		}
 	}
 	if state != StateFiles {
@@ -95,7 +97,6 @@ func (t *Tail) Parse(args []string) bool {
 		return false
 	}
 	return true
-
 }
 
 func (t *Tail) ParseBytes(s string) bool {
