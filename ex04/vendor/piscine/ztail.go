@@ -38,6 +38,9 @@ func ZTail() int {
 	if !t.Parse(argv) {
 		return 1
 	}
+	if t.bytes == 0 {
+		return 0
+	}
 	var re int
 	for i, file := range t.files {
 		re |= DisplayFile(file, uint(i), &t)
