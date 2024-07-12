@@ -43,7 +43,7 @@ func (t *Tail) Parse(args []string) bool {
 			switch state {
 			case StateStart:
 				if r != '-' {
-					PrintErrorMsg("unexpected value: " + string(r))
+					PrintErrorMsg("unexpected value: " + s)
 					return false
 				}
 				state = StateHyphen
@@ -62,14 +62,14 @@ func (t *Tail) Parse(args []string) bool {
 					break
 				}
 				if !IsDigit(r) {
-					PrintErrorMsg("unexpected value: " + string(r))
+					PrintErrorMsg("unexpected value: " + s)
 					return false
 				}
 				state = StateBytes
 			case StateSpaceBeforeBytes:
 				if !IsSpace(r) {
 					if !IsDigit(r) {
-						PrintErrorMsg("unexpected value: " + string(r))
+						PrintErrorMsg("unexpected value: " + s)
 						return false
 					}
 					state = StateBytes
@@ -78,7 +78,7 @@ func (t *Tail) Parse(args []string) bool {
 				i++
 			case StateBytes:
 				if !IsDigit(r) {
-					PrintErrorMsg("invalid number of bytes: ‘" + bytes + "‘")
+					PrintErrorMsg("invalid number of bytes: ‘" + s + "‘")
 					return false
 				}
 				bytes += string(r)
