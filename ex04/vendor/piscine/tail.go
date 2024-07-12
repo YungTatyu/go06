@@ -12,10 +12,11 @@ const (
 
 const (
 	UintMax = ^uint(0)
+	IntMax  = int(UintMax >> 1)
 )
 
 type Tail struct {
-	bytes uint
+	bytes int
 	files []string
 }
 
@@ -100,15 +101,15 @@ func (t *Tail) Parse(args []string) bool {
 }
 
 func (t *Tail) ParseBytes(s string) bool {
-	var sum uint = 0
+	var sum int = 0
 	for _, v := range s {
 		if !IsDigit(v) {
 			return false
 		}
-		if sum > UintMax/10 {
+		if sum > IntMax/10 {
 			return false
 		}
-		sum = sum*10 + uint(v-'0')
+		sum = sum*10 + int(v-'0')
 	}
 	t.bytes = sum
 	return true

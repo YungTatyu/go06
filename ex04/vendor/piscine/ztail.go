@@ -57,9 +57,9 @@ func Cat() int {
 	if !t.Parse(argv) {
 		return 1
 	}
-
-	// for _, file := range argv {
-	// 	re |= DisplayFile(file)
-	// }
-	return 0
+	var re int
+	for _, file := range t.files {
+		re |= DisplayFile(file, t.bytes)
+	}
+	return re
 }
