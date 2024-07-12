@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-func DisplayFile(fileName string, bytes int) int {
+func DisplayFile(fileName string, index uint, t *Tail) int {
 	file, err := os.Open(fileName)
 	if err != nil {
 		PrintError(err)
@@ -12,16 +12,20 @@ func DisplayFile(fileName string, bytes int) int {
 	}
 	defer file.Close()
 	filesize := calcFileSize(file)
-	_, err = file.Seek(-int64(min(bytes, int(filesize))), os.SEEK_END)
+	_, err = file.Seek(-int64(min(t.bytes, int(filesize))), os.SEEK_END)
 	if err != nil {
 		PrintError(err)
 		return 1
 	}
-	buffer := make([]byte, min(bytes, int(filesize)))
+	buffer := make([]byte, min(t.bytes, int(filesize)))
 	_, err = file.Read(buffer)
 	if err != nil {
 		PrintError(err)
 		return 1
+	}
+	len := length(t.files)
+	if len > 1 {
+		buffer = append(createPrefix(fileName, index != 0), buffer...)
 	}
 	_, err = os.Stdout.Write(buffer[:])
 	if err != nil {
@@ -45,4 +49,20 @@ func min(x, y int) int {
 		return y
 	}
 	return x
+}
+
+func createPrefix(fileName string, nl bool) []byte {
+	prefix := "==> " + fileName + " <==\n"
+	if nl {
+		prefix = "\n" + prefix
+	}
+	return []byte(prefix)
+}
+
+func length(arr []string) uint {
+	var i uint = 0
+	for range arr {
+		i++
+	}
+	return i
 }

@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	os.Exit(piscine.Cat())
+	os.Exit(piscine.ZTail())
 }

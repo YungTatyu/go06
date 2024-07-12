@@ -28,26 +28,7 @@ func Usage(msg string) {
 	os.Stderr.WriteString(cmd + msg + "\n")
 }
 
-func ReadPrintLoop() int {
-	for {
-		var buffer [buffsize]byte
-		n, err := os.Stdin.Read(buffer[:])
-		if n == 0 {
-			return 0
-		}
-		if err != nil {
-			PrintError(err)
-			return 1
-		}
-		n, err = os.Stdout.Write(buffer[:])
-		if err != nil {
-			PrintError(err)
-			return 1
-		}
-	}
-}
-
-func Cat() int {
+func ZTail() int {
 	if argc == 1 {
 		Usage("requires two or more arguments")
 		return 1
@@ -58,8 +39,8 @@ func Cat() int {
 		return 1
 	}
 	var re int
-	for _, file := range t.files {
-		re |= DisplayFile(file, t.bytes)
+	for i, file := range t.files {
+		re |= DisplayFile(file, uint(i), &t)
 	}
 	return re
 }
